@@ -14,8 +14,6 @@ enum Status {
 
 class Tile extends PositionComponent
     with TapCallbacks, HasGameRef<SamegameGame> {
-  static final Paint redBorderPaint = Paint()..color = const Color(0xffece8a3);
-
   TileColor tileColor;
   final int xPos;
   final int yPos;
@@ -51,17 +49,7 @@ class Tile extends PositionComponent
 
   @override
   void onTapUp(TapUpEvent event) {
-    switch (status) {
-      case Status.normal:
-        gameRef.tap(this);
-        break;
-      case Status.selected:
-        gameRef.flushSelected();
-        break;
-      case Status.flushed:
-        // do nothing
-        break;
-    }
+    gameRef.onTap(this);
   }
 
   @override
