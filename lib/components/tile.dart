@@ -1,10 +1,8 @@
-import 'dart:ui';
-
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_samegame/samegame_game.dart';
-import 'package:flutter_samegame/tile_color.dart';
+import 'package:flutter_samegame/tile_texture.dart';
 
 enum Status {
   normal,
@@ -14,37 +12,34 @@ enum Status {
 
 class Tile extends PositionComponent
     with TapCallbacks, HasGameRef<SamegameGame> {
-  TileColor tileColor;
+  static const double tileWidth = 32;
+  static const double tileHeight = 32;
+
   final int xPos;
   final int yPos;
-
+  TileTexture texture;
   Status status = Status.normal;
 
   Tile({
     required this.xPos,
     required this.yPos,
-    required this.tileColor,
-  }) : super(size: SamegameGame.tileSize);
+    required this.texture,
+  }) : super(size: Vector2(tileWidth, tileHeight));
 
   @override
   void render(Canvas canvas) {
-    final Paint paint;
+    //debugPrint("render $this");
     switch (status) {
       case Status.normal:
-        paint = Paint()..color = tileColor.normal;
+        texture.renderNormal(canvas, size.toRect());
         break;
       case Status.selected:
-        paint = Paint()..color = tileColor.selected;
+        texture.renderSelected(canvas, size.toRect());
         break;
       case Status.flushed:
-        paint = Paint()..color = Colors.white;
+        texture.renderFlushed(canvas, size.toRect());
         break;
     }
-
-    canvas.drawRect(
-      size.toRect(),
-      paint,
-    );
   }
 
   @override
@@ -54,7 +49,7 @@ class Tile extends PositionComponent
 
   @override
   String toString() {
-    return "($xPos, $yPos), $status, $tileColor";
+    return "($xPos, $yPos), $position, $status, $texture";
   }
 
   void select() {
@@ -71,16 +66,15 @@ class Tile extends PositionComponent
     return status == Status.selected;
   }
 
-  bool isSameColor(TileColor color) {
+  bool isSameColor(TileTexture color) {
     if (isFlushed()) {
       return false;
     }
-    return tileColor == color;
+    return texture == color;
   }
 
   void flush() {
     //debugPrint('flush $xPos, $yPos');
-    assert(status == Status.selected, toString());
     status = Status.flushed;
   }
 
@@ -88,13 +82,11 @@ class Tile extends PositionComponent
     return status == Status.flushed;
   }
 
-  void swap(Tile other) {
-    final tmpColor = tileColor;
-    tileColor = other.tileColor;
-    other.tileColor = tmpColor;
-
-    final tmpStatus = status;
+  void copy(Tile other) {
     status = other.status;
-    other.status = tmpStatus;
+    texture = other.texture;
   }
+
+  // @override
+  // bool get debugMode => true;
 }
