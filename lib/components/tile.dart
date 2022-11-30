@@ -17,14 +17,13 @@ class Tile extends PositionComponent
 
   final int xPos;
   final int yPos;
-  TileTexture texture;
+  TileTexture texture = TileTexture.random();
   Status status = Status.normal;
 
   Tile({
     required this.xPos,
     required this.yPos,
-    required this.texture,
-  }) : super(size: Vector2(tileWidth, tileHeight));
+  });
 
   @override
   void render(Canvas canvas) {
@@ -50,6 +49,11 @@ class Tile extends PositionComponent
   @override
   String toString() {
     return "($xPos, $yPos), $position, $status, $texture";
+  }
+
+  void reset() {
+    texture = TileTexture.random();
+    status = Status.normal;
   }
 
   void select() {

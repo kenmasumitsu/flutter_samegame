@@ -1,5 +1,4 @@
 import 'package:flame/components.dart';
-import 'package:flutter/material.dart';
 
 import '../tile_texture.dart';
 import 'tile.dart';
@@ -11,11 +10,12 @@ class TileBoard extends PositionComponent {
   final List<Tile> _selectedTiles = [];
 
   int _score = 0;
+  int get score => _score;
 
   TileBoard({
     required this.xMax,
     required this.yMax,
-  }) : super(size: Vector2(Tile.tileWidth * xMax, Tile.tileHeight * yMax));
+  });
 
   @override
   Future<void>? onLoad() {
@@ -28,11 +28,12 @@ class TileBoard extends PositionComponent {
           yMax,
           (yIndex) {
             final tile = Tile(
-              texture: TileTexture.random(),
               xPos: xIndex,
               yPos: yIndex,
-            )..position = Vector2(xIndex * Tile.tileWidth,
-                (yMax - (yIndex + 1)) * Tile.tileHeight);
+            )
+              ..position = Vector2(xIndex * Tile.tileWidth,
+                  (yMax - (yIndex + 1)) * Tile.tileHeight)
+              ..size = Vector2(Tile.tileWidth, Tile.tileHeight);
             add(tile);
             return tile;
           },
@@ -42,8 +43,14 @@ class TileBoard extends PositionComponent {
     return null;
   }
 
-  @override
-  void render(Canvas canvas) {}
+  void reset() {
+    _score = 0;
+    for (final colTiles in _tiles) {
+      for (final tile in colTiles) {
+        tile.reset();
+      }
+    }
+  }
 
   @override
   bool get debugMode => false;
@@ -155,18 +162,18 @@ class TileBoard extends PositionComponent {
 
   void _handleColumn(Set<int> xPosSet) {
     for (var xPos in xPosSet) {
-      final tiles = _tiles[xPos];
+      final colTiles = _tiles[xPos];
 
       int toYPos = 0;
-      for (var yPos = 0; yPos < tiles.length; yPos++) {
-        if (!tiles[yPos].isFlushed()) {
-          tiles[toYPos].copy(tiles[yPos]);
+      for (var yPos = 0; yPos < colTiles.length; yPos++) {
+        if (!colTiles[yPos].isFlushed()) {
+          colTiles[toYPos].copy(colTiles[yPos]);
           toYPos++;
         }
       }
 
-      while (toYPos < tiles.length) {
-        tiles[toYPos].flush();
+      while (toYPos < colTiles.length) {
+        colTiles[toYPos].flush();
         toYPos++;
       }
     }
