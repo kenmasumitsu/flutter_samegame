@@ -6,9 +6,17 @@ import 'package:flutter_samegame/components/tile_board.dart';
 import 'components/menu_bar.dart';
 import 'components/tile.dart';
 
-class SamegameGame extends FlameGame with HasTappableComponents {
+enum Status {
+  stopped,
+  suspend,
+  running,
+}
+
+class SamegameGame extends FlameGame
+    with HasTappableComponents, HasTappablesBridge {
   static const statusBarHeight = 24.0;
 
+  Status status = Status.stopped;
   late final TileBoard tileBoard;
   late final MenuBar menuBar;
 
@@ -55,5 +63,27 @@ class SamegameGame extends FlameGame with HasTappableComponents {
 
   void reset() {
     tileBoard.reset();
+  }
+
+  void start() {
+    status = Status.running;
+    tileBoard.reset();
+  }
+
+  void suspend() {
+    status = Status.suspend;
+  }
+
+  void resume() {
+    assert(status == Status.suspend);
+    status = Status.running;
+  }
+
+  bool isRunning() {
+    return status == Status.running;
+  }
+
+  bool isSuspend() {
+    return status == Status.suspend;
   }
 }

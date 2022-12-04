@@ -43,7 +43,10 @@ class Tile extends PositionComponent
 
   @override
   void onTapUp(TapUpEvent event) {
-    gameRef.onTap(this);
+    debugPrint('onTapUp $this');
+    if (gameRef.isRunning()) {
+      gameRef.onTap(this);
+    }
   }
 
   @override

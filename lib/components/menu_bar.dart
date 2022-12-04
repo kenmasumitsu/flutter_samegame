@@ -1,10 +1,12 @@
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
+import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_samegame/layers/menu_layer.dart';
 import 'package:flutter_samegame/samegame_game.dart';
 
 class MenuBar extends PositionComponent with HasGameRef<SamegameGame> {
-  late final ResetText resetText;
+  late final MenuButton resetText;
   late final TextComponent scoreText;
 
   @override
@@ -15,8 +17,8 @@ class MenuBar extends PositionComponent with HasGameRef<SamegameGame> {
       style: const TextStyle(color: Colors.white),
     );
 
-    resetText = ResetText()
-      ..text = "Reset"
+    resetText = MenuButton()
+      ..text = "Menu"
       ..textRenderer = regular
       ..position = Vector2(0, 0);
     add(resetText);
@@ -38,10 +40,11 @@ class MenuBar extends PositionComponent with HasGameRef<SamegameGame> {
   }
 }
 
-class ResetText extends TextComponent
+class MenuButton extends TextComponent
     with TapCallbacks, HasGameRef<SamegameGame> {
   @override
   void onTapUp(TapUpEvent event) {
-    gameRef.reset();
+    gameRef.suspend();
+    gameRef.overlays.add(MenuLayer.name);
   }
 }

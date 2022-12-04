@@ -45,6 +45,7 @@ class TileBoard extends PositionComponent {
 
   void reset() {
     _score = 0;
+    _selectedTiles.clear();
     for (final colTiles in _tiles) {
       for (final tile in colTiles) {
         tile.reset();
