@@ -1,28 +1,39 @@
 import 'dart:math';
 
+import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_samegame/palatte.dart';
 
 @immutable
 class TileTexture {
-  final Color normal;
-  final Color selected;
+  final PaletteEntry normal;
+  final PaletteEntry selected;
+  final PaletteEntry flushed;
   final String label;
 
-  const TileTexture._(this.normal, this.selected, this.label);
+  const TileTexture._(
+    this.normal,
+    this.selected,
+    this.flushed,
+    this.label,
+  );
 
-  static TileTexture red = const TileTexture._(
-    Colors.red,
-    Colors.grey,
+  static const TileTexture red = TileTexture._(
+    Palatte.tileRed,
+    Palatte.tileRedSelected,
+    Palatte.tileFlushed,
     "red",
   );
-  static TileTexture yellow = const TileTexture._(
-    Colors.yellow,
-    Colors.grey,
+  static const TileTexture yellow = TileTexture._(
+    Palatte.tileYellow,
+    Palatte.tileYellowSelected,
+    Palatte.tileFlushed,
     "yellow",
   );
   static TileTexture blue = const TileTexture._(
-    Colors.blue,
-    Colors.grey,
+    Palatte.tileBlue,
+    Palatte.tileBlueSelected,
+    Palatte.tileFlushed,
     "blue",
   );
 
@@ -43,13 +54,11 @@ class TileTexture {
   }
 
   void renderNormal(Canvas canvas, Rect rect) {
-    final paint = Paint()..color = normal;
-    canvas.drawRect(rect, paint);
+    canvas.drawRect(rect, normal.paint());
   }
 
   void renderSelected(Canvas canvas, Rect rect) {
-    final paint = Paint()..color = selected;
-    canvas.drawRect(rect, paint);
+    canvas.drawRect(rect, selected.paint());
   }
 
   void renderFlushed(Canvas canvas, Rect rect) {
