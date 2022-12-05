@@ -1,8 +1,6 @@
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
-import 'package:flame/input.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_samegame/layers/menu_layer.dart';
 import 'package:flutter_samegame/samegame_game.dart';
 
 class MenuBar extends PositionComponent with HasGameRef<SamegameGame> {
@@ -44,7 +42,6 @@ class MenuButton extends TextComponent
     with TapCallbacks, HasGameRef<SamegameGame> {
   @override
   void onTapUp(TapUpEvent event) {
-    gameRef.suspend();
-    gameRef.overlays.add(MenuLayer.name);
+    gameRef.showMenu();
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_samegame/palatte.dart';
 import 'package:flutter_samegame/samegame_game.dart';
 
 class MenuLayer extends StatelessWidget {
@@ -6,14 +7,14 @@ class MenuLayer extends StatelessWidget {
 
   final SamegameGame game;
 
-  const MenuLayer(this.game, {super.key});
+  const MenuLayer({super.key, required this.game});
 
   @override
   Widget build(BuildContext context) {
     return Center(
       child: Container(
         alignment: Alignment.center,
-        color: Color.fromARGB(180, 28, 28, 221),
+        color: Palatte.menuBackgroundd.color,
         width: 240,
         height: 360,
         child: Column(

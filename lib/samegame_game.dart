@@ -2,9 +2,12 @@ import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/widgets.dart';
 import 'package:flutter_samegame/components/tile_board.dart';
+import 'package:flutter_samegame/layers/gameclear_layer.dart';
 
 import 'components/menu_bar.dart';
 import 'components/tile.dart';
+import 'layers/gameover_layer.dart';
+import 'layers/menu_layer.dart';
 
 enum Status {
   stopped,
@@ -14,7 +17,7 @@ enum Status {
 
 class SamegameGame extends FlameGame
     with HasTappableComponents, HasTappablesBridge {
-  static const statusBarHeight = 24.0;
+  static const menuBarHeight = 24.0;
 
   Status status = Status.stopped;
   late final TileBoard tileBoard;
@@ -31,9 +34,9 @@ class SamegameGame extends FlameGame
 
     menuBar = MenuBar()
       ..position = Vector2(0, 0)
-      ..size = Vector2(tileBoardWidth, statusBarHeight);
+      ..size = Vector2(tileBoardWidth, menuBarHeight);
     tileBoard = TileBoard(xMax: numOfColTiles, yMax: numOfRowTiles)
-      ..position = Vector2(0, statusBarHeight)
+      ..position = Vector2(0, menuBarHeight)
       ..size = Vector2(tileBoardWidth, tileBoardHeight);
 
     final world = World()
@@ -44,7 +47,7 @@ class SamegameGame extends FlameGame
 
     final camera = CameraComponent(world: world)
       ..viewfinder.visibleGameSize =
-          Vector2(tileBoardWidth, statusBarHeight + tileBoardHeight)
+          Vector2(tileBoardWidth, menuBarHeight + tileBoardHeight)
       ..viewfinder.position = Vector2(0, 0)
       ..viewfinder.anchor = Anchor.topLeft;
 
@@ -85,5 +88,20 @@ class SamegameGame extends FlameGame
 
   bool isSuspend() {
     return status == Status.suspend;
+  }
+
+  void showMenu() {
+    suspend();
+    overlays.add(MenuLayer.name);
+  }
+
+  void gameClear() {
+    status = Status.stopped;
+    overlays.add(GameClearLayer.name);
+  }
+
+  void gameOver() {
+    status = Status.stopped;
+    overlays.add(GameOverLayer.name);
   }
 }

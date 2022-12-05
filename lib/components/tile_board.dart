@@ -1,9 +1,10 @@
 import 'package:flame/components.dart';
+import 'package:flutter_samegame/samegame_game.dart' as game;
 
 import '../tile_texture.dart';
 import 'tile.dart';
 
-class TileBoard extends PositionComponent {
+class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   final int xMax;
   final int yMax;
   late final List<List<Tile>> _tiles;
@@ -67,11 +68,33 @@ class TileBoard extends PositionComponent {
         break;
       case Status.selected:
         _flushSelected();
+        // check game clear
+        if (_isGameClear()) {
+          _score += 1000;
+          gameRef.gameClear();
+        }
+
+        // check game over
+        if (_isGameOver()) {
+          gameRef.gameOver();
+        }
         break;
       case Status.flushed:
         // do nothing
         break;
     }
+  }
+
+  bool _isGameClear() {
+    if (_tiles[0][0].isFlushed()) {
+      return true;
+    }
+    return false;
+  }
+
+  bool _isGameOver() {
+    // TODO
+    return false;
   }
 
   bool _isSelected() {
