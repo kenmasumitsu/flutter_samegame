@@ -8,7 +8,7 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   final int xMax;
   final int yMax;
   late final List<List<Tile>> _tiles;
-  final List<Tile> _selectedTiles = [];
+  List<Tile> _selectedTiles = [];
 
   int _score = 0;
   int get score => _score;
@@ -63,7 +63,10 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
         if (_isSelected()) {
           _resetSelected();
         } else {
-          _select(tile);
+          _selectedTiles = _findSelectedTiles(tile);
+          for (final tile in _selectedTiles) {
+            tile.select();
+          }
         }
         break;
       case Status.selected:
@@ -93,8 +96,20 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   }
 
   bool _isGameOver() {
-    // TODO
-    return false;
+    assert(!_isSelected());
+    for (final colTiles in _tiles) {
+      for (final tile in colTiles) {
+        if (tile.isFlushed()) {
+          continue;
+        }
+        final selectedTiles = _findSelectedTiles(tile);
+        if (selectedTiles.isNotEmpty) {
+          return false;
+        }
+      }
+    }
+
+    return true;
   }
 
   bool _isSelected() {
@@ -108,9 +123,10 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
     _selectedTiles.clear();
   }
 
-  void _select(Tile tile) {
+  List<Tile> _findSelectedTiles(Tile tile) {
     assert(!_isSelected());
 
+    final List<Tile> selectedTiles = [];
     final List<List<bool>> traverseMap = List.generate(
       xMax,
       (xIndex) => List.generate(
@@ -124,14 +140,13 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
       tile.yPos,
       tile.texture,
       traverseMap,
+      selectedTiles,
     );
 
-    if (_selectedTiles.length == 1) {
-      _selectedTiles.clear();
-    } else if (_selectedTiles.length >= 2) {
-      for (var tile in _selectedTiles) {
-        tile.select();
-      }
+    if (selectedTiles.length > 1) {
+      return selectedTiles;
+    } else {
+      return [];
     }
   }
 
@@ -140,6 +155,7 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
     int yPos,
     TileTexture color,
     List<List<bool>> traverseMap,
+    List<Tile> selectedTiles,
   ) {
     if (xPos < 0 || xMax <= xPos) {
       return;
@@ -157,12 +173,12 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
       return;
     }
 
-    _selectedTiles.add(_tiles[xPos][yPos]);
+    selectedTiles.add(_tiles[xPos][yPos]);
 
-    _doSelect(xPos - 1, yPos, color, traverseMap);
-    _doSelect(xPos + 1, yPos, color, traverseMap);
-    _doSelect(xPos, yPos - 1, color, traverseMap);
-    _doSelect(xPos, yPos + 1, color, traverseMap);
+    _doSelect(xPos - 1, yPos, color, traverseMap, selectedTiles);
+    _doSelect(xPos + 1, yPos, color, traverseMap, selectedTiles);
+    _doSelect(xPos, yPos - 1, color, traverseMap, selectedTiles);
+    _doSelect(xPos, yPos + 1, color, traverseMap, selectedTiles);
   }
 
   void _flushSelected() {
