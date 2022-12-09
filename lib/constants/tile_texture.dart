@@ -2,7 +2,7 @@ import 'dart:math';
 
 import 'package:flame/palette.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_samegame/palatte.dart';
+import 'package:flutter_samegame/constants/palatte.dart';
 
 @immutable
 class TileTexture {
@@ -36,15 +36,31 @@ class TileTexture {
     Palatte.tileFlushed,
     "blue",
   );
+  static TileTexture green = const TileTexture._(
+    Palatte.tileGreen,
+    Palatte.tileGreenSelected,
+    Palatte.tileFlushed,
+    "green",
+  );
+  static TileTexture purple = const TileTexture._(
+    Palatte.tilePurple,
+    Palatte.tilePurpleSelected,
+    Palatte.tileFlushed,
+    "purple",
+  );
 
   static final List<TileTexture> _singletones = [
     red,
     yellow,
     blue,
+    green,
+    purple,
   ];
 
-  static TileTexture random() {
-    final n = Random().nextInt(_singletones.length);
+  static TileTexture random(int nColors) {
+    assert(nColors <= _singletones.length);
+
+    final n = Random().nextInt(nColors);
     return _singletones[n];
   }
 

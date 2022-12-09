@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_samegame/palatte.dart';
+import 'package:flutter_samegame/constants/palatte.dart';
 import 'package:flutter_samegame/samegame_game.dart';
-
-import 'menu_layer.dart';
 
 class MenuLayer extends StatefulWidget {
   static const name = 'menu';
@@ -13,12 +11,6 @@ class MenuLayer extends StatefulWidget {
 
   @override
   State<MenuLayer> createState() => _MenuLayerState();
-}
-
-enum Level {
-  easy,
-  normal,
-  hard,
 }
 
 extension LevelExt on Level {
@@ -32,32 +24,10 @@ extension LevelExt on Level {
         return "HARD";
     }
   }
-
-  Level next() {
-    switch (this) {
-      case Level.easy:
-        return Level.normal;
-      case Level.normal:
-        return Level.hard;
-      case Level.hard:
-        return Level.hard;
-    }
-  }
-
-  Level prev() {
-    switch (this) {
-      case Level.easy:
-        return Level.easy;
-      case Level.normal:
-        return Level.easy;
-      case Level.hard:
-        return Level.normal;
-    }
-  }
 }
 
 class _MenuLayerState extends State<MenuLayer> {
-  Level level = Level.normal;
+  Level level = Level.easy;
 
   @override
   Widget build(BuildContext context) {
@@ -94,16 +64,7 @@ class _MenuLayerState extends State<MenuLayer> {
                 onPressed: () {
                   debugPrint('start');
                   widget.game.overlays.remove(MenuLayer.name);
-
-                  switch (level) {
-                    case Level.easy:
-                      break;
-                    case Level.normal:
-                      break;
-                    case Level.hard:
-                      break;
-                  }
-                  widget.game.start();
+                  widget.game.start(level);
                 },
                 child: const Text('New Game'),
               ),

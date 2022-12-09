@@ -1,12 +1,15 @@
+import 'dart:math';
+
 import 'package:flame/components.dart';
 import 'package:flutter_samegame/samegame_game.dart' as game;
 
-import '../tile_texture.dart';
+import '../constants/tile_texture.dart';
 import 'tile.dart';
 
 class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
-  final int xMax;
-  final int yMax;
+  final int nColumns;
+  final int nRows;
+  final int nColors;
   late final List<List<Tile>> _tiles;
   List<Tile> _selectedTiles = [];
 
@@ -14,27 +17,31 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   int get score => _score;
 
   TileBoard({
-    required this.xMax,
-    required this.yMax,
+    required this.nColumns,
+    required this.nRows,
+    required this.nColors,
   });
 
   @override
   Future<void>? onLoad() {
     super.onLoad();
 
+    final tileSize = _calcTileSize();
+
     _tiles = List.generate(
-      xMax,
+      nColumns,
       (xIndex) {
         return List.generate(
-          yMax,
+          nRows,
           (yIndex) {
             final tile = Tile(
               xPos: xIndex,
               yPos: yIndex,
+              nColors: nColors,
             )
-              ..position = Vector2(xIndex * Tile.tileWidth,
-                  (yMax - (yIndex + 1)) * Tile.tileHeight)
-              ..size = Vector2(Tile.tileWidth, Tile.tileHeight);
+              ..position =
+                  Vector2(xIndex * tileSize, (nRows - (yIndex + 1)) * tileSize)
+              ..size = Vector2(tileSize, tileSize);
             add(tile);
             return tile;
           },
@@ -42,6 +49,12 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
       },
     );
     return null;
+  }
+
+  double _calcTileSize() {
+    final width = game.SamegameGame.tileBoardWidth / nColumns;
+    final height = game.SamegameGame.tileBoardHeight / nRows;
+    return max(width, height);
   }
 
   void reset() {
@@ -128,9 +141,9 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
 
     final List<Tile> selectedTiles = [];
     final List<List<bool>> traverseMap = List.generate(
-      xMax,
+      nColumns,
       (xIndex) => List.generate(
-        yMax,
+        nRows,
         ((yIndex) => false),
       ),
     );
@@ -157,10 +170,10 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
     List<List<bool>> traverseMap,
     List<Tile> selectedTiles,
   ) {
-    if (xPos < 0 || xMax <= xPos) {
+    if (xPos < 0 || nColumns <= xPos) {
       return;
     }
-    if (yPos < 0 || yMax <= yPos) {
+    if (yPos < 0 || nRows <= yPos) {
       return;
     }
 
@@ -236,13 +249,13 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   }
 
   void _copyRow(int fromX, int toX) {
-    for (int y = 0; y < yMax; y++) {
+    for (int y = 0; y < nRows; y++) {
       _tiles[toX][y].copy(_tiles[fromX][y]);
     }
   }
 
   void _flushRow(int x) {
-    for (int y = 0; y < yMax; y++) {
+    for (int y = 0; y < nRows; y++) {
       _tiles[x][y].flush();
     }
   }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../palatte.dart';
+import '../constants/palatte.dart';
 import '../samegame_game.dart';
 import 'menu_layer.dart';
 

@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/widgets.dart';
@@ -15,39 +17,63 @@ enum Status {
   running,
 }
 
+enum Level {
+  easy(12, 8, 3),
+  normal(15, 10, 4),
+  hard(20, 12, 5);
+
+  const Level(this.nColumns, this.nRows, this.nColors);
+
+  final int nColumns;
+  final int nRows;
+  final int nColors;
+
+  Level next() {
+    switch (this) {
+      case Level.easy:
+        return Level.normal;
+      case Level.normal:
+        return Level.hard;
+      case Level.hard:
+        return Level.hard;
+    }
+  }
+
+  Level prev() {
+    switch (this) {
+      case Level.easy:
+        return Level.easy;
+      case Level.normal:
+        return Level.easy;
+      case Level.hard:
+        return Level.normal;
+    }
+  }
+}
+
 class SamegameGame extends FlameGame
     with HasTappableComponents, HasTappablesBridge {
-  static const menuBarHeight = 24.0;
+  static const menuBarHeight = 120.0;
+  static const menuBarWidth = 800.0;
+
+  static const tileBoardWidth = 1600.0;
+  static const tileBoardHeight = 1600.0;
 
   Status status = Status.stopped;
-  late final TileBoard tileBoard;
-  late final MenuBar menuBar;
 
   @override
   Future<void>? onLoad() {
     super.onLoad();
 
-    const numOfColTiles = 12;
-    const numOfRowTiles = 8;
-    const tileBoardWidth = Tile.tileWidth * numOfColTiles;
-    const tileBoardHeight = Tile.tileHeight * numOfRowTiles;
-
-    menuBar = MenuBar()
+    final menuBar = MenuBar()
       ..position = Vector2(0, 0)
-      ..size = Vector2(tileBoardWidth, menuBarHeight);
-    tileBoard = TileBoard(xMax: numOfColTiles, yMax: numOfRowTiles)
-      ..position = Vector2(0, menuBarHeight)
-      ..size = Vector2(tileBoardWidth, tileBoardHeight);
-
-    final world = World()
-      ..add(tileBoard)
-      ..add(menuBar);
-
+      ..size = Vector2(menuBarWidth, menuBarHeight);
+    final world = World()..add(menuBar);
     add(world);
 
     final camera = CameraComponent(world: world)
       ..viewfinder.visibleGameSize =
-          Vector2(tileBoardWidth, menuBarHeight + tileBoardHeight)
+          Vector2(tileBoardWidth, tileBoardHeight + menuBarHeight)
       ..viewfinder.position = Vector2(0, 0)
       ..viewfinder.anchor = Anchor.topLeft;
 
@@ -57,20 +83,53 @@ class SamegameGame extends FlameGame
   }
 
   void onTap(Tile tile) {
-    tileBoard.onTap(tile);
+    tileBoard?.onTap(tile);
   }
 
   int getScore() {
-    return tileBoard.score;
+    return tileBoard?.score ?? 0;
   }
 
-  void reset() {
-    tileBoard.reset();
+  void reset() {}
+
+  World get world {
+    final worlds = children.query<World>();
+    assert(worlds.length == 1);
+    final world = worlds[0];
+    return world;
   }
 
-  void start() {
+  TileBoard? get tileBoard {
+    final worlds = children.query<World>();
+    assert(worlds.length == 1);
+    final world = worlds[0];
+
+    final tileBoards = world.children.query<TileBoard>();
+    if (tileBoards.isEmpty) {
+      return null;
+    } else {
+      assert(tileBoards.length == 1);
+      return tileBoards[0];
+    }
+  }
+
+  void start(Level level) {
+    _reset(level);
     status = Status.running;
-    tileBoard.reset();
+  }
+
+  void _reset(Level level) {
+    tileBoard?.removeFromParent();
+
+    final tb = TileBoard(
+      nColumns: level.nColumns,
+      nRows: level.nRows,
+      nColors: level.nColors,
+    )
+      ..position = Vector2(0, menuBarHeight)
+      ..size = Vector2(tileBoardWidth, tileBoardHeight);
+
+    world.add(tb);
   }
 
   void suspend() {

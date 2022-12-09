@@ -2,7 +2,7 @@ import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_samegame/samegame_game.dart';
-import 'package:flutter_samegame/tile_texture.dart';
+import 'package:flutter_samegame/constants/tile_texture.dart';
 
 enum Status {
   normal,
@@ -12,18 +12,17 @@ enum Status {
 
 class Tile extends PositionComponent
     with TapCallbacks, HasGameRef<SamegameGame> {
-  static const double tileWidth = 32;
-  static const double tileHeight = 32;
-
   final int xPos;
   final int yPos;
-  TileTexture texture = TileTexture.random();
+  final int nColors;
+  TileTexture texture;
   Status status = Status.normal;
 
   Tile({
     required this.xPos,
     required this.yPos,
-  });
+    required this.nColors,
+  }) : texture = TileTexture.random(nColors);
 
   @override
   void render(Canvas canvas) {
@@ -50,12 +49,17 @@ class Tile extends PositionComponent
   }
 
   @override
+  void onRemove() {
+    debugPrint('onRemove $this');
+  }
+
+  @override
   String toString() {
     return "($xPos, $yPos), $position, $status, $texture";
   }
 
   void reset() {
-    texture = TileTexture.random();
+    texture = TileTexture.random(nColors);
     status = Status.normal;
   }
 

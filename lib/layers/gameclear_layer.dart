@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_samegame/layers/menu_layer.dart';
 
-import '../palatte.dart';
+import '../constants/palatte.dart';
 import '../samegame_game.dart';
 
 class GameClearLayer extends StatelessWidget {

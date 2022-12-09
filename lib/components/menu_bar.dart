@@ -12,7 +12,10 @@ class MenuBar extends PositionComponent with HasGameRef<SamegameGame> {
     super.onLoad();
 
     final regular = TextPaint(
-      style: const TextStyle(color: Colors.white),
+      style: const TextStyle(
+        color: Colors.white,
+        fontSize: 40,
+      ),
     );
 
     resetText = MenuButton()
@@ -24,7 +27,7 @@ class MenuBar extends PositionComponent with HasGameRef<SamegameGame> {
     scoreText = TextComponent(
       text: 'Score: 0',
       textRenderer: regular,
-    )..position = Vector2(48, 0);
+    )..position = Vector2(120, 0);
     add(scoreText);
 
     return null;
