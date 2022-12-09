@@ -1,5 +1,3 @@
-import 'dart:math';
-
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/widgets.dart';
