@@ -39,15 +39,12 @@ class _MenuLayerState extends State<MenuLayer> {
         height: 360,
         child: Card(
           color: Palatte.menuBackground.color,
+          //color: Colors.blue,
           child: Column(
             children: [
               const SizedBox(
                 height: 24,
               ),
-              // Text(
-              //   'New Game',
-              //   style: theme.textTheme.titleLarge,
-              // ),
               if (widget.game.isSuspend()) ...[
                 ElevatedButton(
                   onPressed: () {
@@ -75,11 +72,13 @@ class _MenuLayerState extends State<MenuLayer> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        level = level.prev();
-                      });
-                    },
+                    onPressed: level.isEasiest()
+                        ? null
+                        : () {
+                            setState(() {
+                              level = level.prev();
+                            });
+                          },
                     child: const Icon(Icons.arrow_left),
                   ),
                   const SizedBox(
@@ -99,12 +98,32 @@ class _MenuLayerState extends State<MenuLayer> {
                     width: 8,
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        level = level.next();
-                      });
-                    },
+                    onPressed: level.isHardest()
+                        ? null
+                        : () {
+                            setState(() {
+                              level = level.next();
+                            });
+                          },
                     child: const Icon(Icons.arrow_right),
+                  ),
+                ],
+              ),
+              const SizedBox(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    "High Score: ",
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(color: Colors.white),
+                  ),
+                  Text(
+                    "10000",
+                    style: theme.textTheme.titleMedium
+                        ?.copyWith(color: Colors.white),
                   ),
                 ],
               ),

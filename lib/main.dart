@@ -1,3 +1,6 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'firebase_options.dart';
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_samegame/layers/gameover_layer.dart';
@@ -6,7 +9,13 @@ import 'package:flutter_samegame/layers/menu_layer.dart';
 
 import 'layers/gameclear_layer.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   final game = SamegameGame();
   runApp(
     GameWidget(

@@ -47,6 +47,14 @@ enum Level {
         return Level.normal;
     }
   }
+
+  bool isEasiest() {
+    return this == Level.easy;
+  }
+
+  bool isHardest() {
+    return this == Level.hard;
+  }
 }
 
 class SamegameGame extends FlameGame

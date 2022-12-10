@@ -21,5 +21,6 @@ class Palatte {
   static const PaletteEntry tileFlushed = PaletteEntry(Color(0xfffafafa));
 
   static const PaletteEntry menuBackground =
-      PaletteEntry(Color.fromARGB(51, 82, 82, 213));
+      //PaletteEntry(Color.fromARGB(51, 82, 82, 213));
+      PaletteEntry(Color(0xAA0d47a1));
 }
