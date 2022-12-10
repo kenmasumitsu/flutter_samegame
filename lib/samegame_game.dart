@@ -65,7 +65,10 @@ class SamegameGame extends FlameGame
   static const tileBoardWidth = 1600.0;
   static const tileBoardHeight = 1600.0;
 
-  Status status = Status.stopped;
+  Status _status = Status.stopped;
+  Level _level = Level.easy;
+
+  Level get level => _level;
 
   @override
   Future<void>? onLoad() {
@@ -96,8 +99,6 @@ class SamegameGame extends FlameGame
     return tileBoard?.score ?? 0;
   }
 
-  void reset() {}
-
   World get world {
     final worlds = children.query<World>();
     assert(worlds.length == 1);
@@ -120,17 +121,18 @@ class SamegameGame extends FlameGame
   }
 
   void start(Level level) {
-    _reset(level);
-    status = Status.running;
+    _level = level;
+    _reset();
+    _status = Status.running;
   }
 
-  void _reset(Level level) {
+  void _reset() {
     tileBoard?.removeFromParent();
 
     final tb = TileBoard(
-      nColumns: level.nColumns,
-      nRows: level.nRows,
-      nColors: level.nColors,
+      nColumns: _level.nColumns,
+      nRows: _level.nRows,
+      nColors: _level.nColors,
     )
       ..position = Vector2(0, menuBarHeight)
       ..size = Vector2(tileBoardWidth, tileBoardHeight);
@@ -139,20 +141,20 @@ class SamegameGame extends FlameGame
   }
 
   void suspend() {
-    status = Status.suspend;
+    _status = Status.suspend;
   }
 
   void resume() {
-    assert(status == Status.suspend);
-    status = Status.running;
+    assert(_status == Status.suspend);
+    _status = Status.running;
   }
 
   bool isRunning() {
-    return status == Status.running;
+    return _status == Status.running;
   }
 
   bool isSuspend() {
-    return status == Status.suspend;
+    return _status == Status.suspend;
   }
 
   void showMenu() {
@@ -161,12 +163,12 @@ class SamegameGame extends FlameGame
   }
 
   void gameClear() {
-    status = Status.stopped;
+    _status = Status.stopped;
     overlays.add(GameClearLayer.name);
   }
 
   void gameOver() {
-    status = Status.stopped;
+    _status = Status.stopped;
     overlays.add(GameOverLayer.name);
   }
 }

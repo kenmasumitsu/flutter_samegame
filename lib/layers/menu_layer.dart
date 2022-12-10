@@ -27,7 +27,13 @@ extension LevelExt on Level {
 }
 
 class _MenuLayerState extends State<MenuLayer> {
-  Level level = Level.easy;
+  Level _level = Level.easy;
+
+  @override
+  void initState() {
+    super.initState();
+    _level = widget.game.level;
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,7 +67,7 @@ class _MenuLayerState extends State<MenuLayer> {
                 onPressed: () {
                   debugPrint('start');
                   widget.game.overlays.remove(MenuLayer.name);
-                  widget.game.start(level);
+                  widget.game.start(_level);
                 },
                 child: const Text('New Game'),
               ),
@@ -72,11 +78,11 @@ class _MenuLayerState extends State<MenuLayer> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: level.isEasiest()
+                    onPressed: _level.isEasiest()
                         ? null
                         : () {
                             setState(() {
-                              level = level.prev();
+                              _level = _level.prev();
                             });
                           },
                     child: const Icon(Icons.arrow_left),
@@ -88,7 +94,7 @@ class _MenuLayerState extends State<MenuLayer> {
                     width: 72,
                     child: Center(
                       child: Text(
-                        level.name,
+                        _level.name,
                         style: theme.textTheme.titleMedium
                             ?.copyWith(color: Colors.white),
                       ),
@@ -98,11 +104,11 @@ class _MenuLayerState extends State<MenuLayer> {
                     width: 8,
                   ),
                   ElevatedButton(
-                    onPressed: level.isHardest()
+                    onPressed: _level.isHardest()
                         ? null
                         : () {
                             setState(() {
-                              level = level.next();
+                              _level = _level.next();
                             });
                           },
                     child: const Icon(Icons.arrow_right),
@@ -112,20 +118,26 @@ class _MenuLayerState extends State<MenuLayer> {
               const SizedBox(
                 height: 12,
               ),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Text(
-                    "High Score: ",
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(color: Colors.white),
-                  ),
-                  Text(
-                    "10000",
-                    style: theme.textTheme.titleMedium
-                        ?.copyWith(color: Colors.white),
-                  ),
-                ],
+              Text(
+                "High Score",
+                style:
+                    theme.textTheme.titleMedium?.copyWith(color: Colors.white),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                "Name",
+                style:
+                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                "1234",
+                style:
+                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
             ],
           ),
