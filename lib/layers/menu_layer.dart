@@ -1,17 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_samegame/constants/palatte.dart';
+import 'package:flutter_samegame/providers/high_score_provider.dart';
 import 'package:flutter_samegame/samegame_game.dart';
-
-class MenuLayer extends StatefulWidget {
-  static const name = 'menu';
-
-  final SamegameGame game;
-
-  const MenuLayer({super.key, required this.game});
-
-  @override
-  State<MenuLayer> createState() => _MenuLayerState();
-}
 
 extension LevelExt on Level {
   String get name {
@@ -26,7 +17,18 @@ extension LevelExt on Level {
   }
 }
 
-class _MenuLayerState extends State<MenuLayer> {
+class MenuLayer extends ConsumerStatefulWidget {
+  static const name = 'menu';
+
+  final SamegameGame game;
+
+  const MenuLayer({super.key, required this.game});
+
+  @override
+  ConsumerState<MenuLayer> createState() => _MenuLayerState();
+}
+
+class _MenuLayerState extends ConsumerState<MenuLayer> {
   Level _level = Level.easy;
 
   @override
@@ -38,6 +40,8 @@ class _MenuLayerState extends State<MenuLayer> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    final highScore = ref.watch(highScoreProvider(_level));
 
     return Center(
       child: SizedBox(
@@ -65,7 +69,6 @@ class _MenuLayerState extends State<MenuLayer> {
               ],
               ElevatedButton(
                 onPressed: () {
-                  debugPrint('start');
                   widget.game.overlays.remove(MenuLayer.name);
                   widget.game.start(_level);
                 },
@@ -127,7 +130,7 @@ class _MenuLayerState extends State<MenuLayer> {
                 height: 8,
               ),
               Text(
-                "Name",
+                highScore.name,
                 style:
                     theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),
@@ -135,7 +138,7 @@ class _MenuLayerState extends State<MenuLayer> {
                 height: 8,
               ),
               Text(
-                "1234",
+                highScore.score.toString(),
                 style:
                     theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
               ),

@@ -14,6 +14,9 @@ class GameOverLayer extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
+    final title =
+        game.status == Status.gameclear ? 'Congraturation' : 'Game Over';
+
     return Center(
       child: SizedBox(
         width: 240,
@@ -26,7 +29,7 @@ class GameOverLayer extends StatelessWidget {
                 height: 24,
               ),
               Text(
-                'Game Over',
+                title,
                 style: theme.textTheme.titleLarge,
               ),
               const SizedBox(

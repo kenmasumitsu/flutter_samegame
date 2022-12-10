@@ -1,4 +1,5 @@
 import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'firebase_options.dart';
 
 import 'package:flame/game.dart';
@@ -18,24 +19,21 @@ Future<void> main() async {
 
   final game = SamegameGame();
   runApp(
-    GameWidget(
-      game: game,
-      overlayBuilderMap: {
-        MenuLayer.name: (BuildContext ctx, SamegameGame game) {
-          return MenuLayer(game: game);
+    ProviderScope(
+      child: GameWidget(
+        game: game,
+        overlayBuilderMap: {
+          MenuLayer.name: (BuildContext ctx, SamegameGame game) {
+            return MenuLayer(game: game);
+          },
+          GameOverLayer.name: (BuildContext ctx, SamegameGame game) {
+            return GameOverLayer(
+              game: game,
+            );
+          },
         },
-        GameOverLayer.name: (BuildContext ctx, SamegameGame game) {
-          return GameOverLayer(
-            game: game,
-          );
-        },
-        GameClearLayer.name: (BuildContext ctx, SamegameGame game) {
-          return GameClearLayer(
-            game: game,
-          );
-        }
-      },
-      initialActiveOverlays: const ['menu'],
+        initialActiveOverlays: const ['menu'],
+      ),
     ),
   );
 }

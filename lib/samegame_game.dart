@@ -10,9 +10,10 @@ import 'layers/gameover_layer.dart';
 import 'layers/menu_layer.dart';
 
 enum Status {
-  stopped,
   suspend,
   running,
+  gameover,
+  gameclear,
 }
 
 enum Level {
@@ -65,7 +66,9 @@ class SamegameGame extends FlameGame
   static const tileBoardWidth = 1600.0;
   static const tileBoardHeight = 1600.0;
 
-  Status _status = Status.stopped;
+  Status _status = Status.gameover;
+  Status get status => _status;
+
   Level _level = Level.easy;
 
   Level get level => _level;
@@ -163,12 +166,12 @@ class SamegameGame extends FlameGame
   }
 
   void gameClear() {
-    _status = Status.stopped;
-    overlays.add(GameClearLayer.name);
+    _status = Status.gameclear;
+    overlays.add(GameOverLayer.name);
   }
 
   void gameOver() {
-    _status = Status.stopped;
+    _status = Status.gameover;
     overlays.add(GameOverLayer.name);
   }
 }
