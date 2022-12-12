@@ -18,8 +18,7 @@ class Palatte {
   static const PaletteEntry tilePurpleSelected =
       PaletteEntry(Color(0xffce93d8));
 
-  static const PaletteEntry tileFlushed = PaletteEntry(Color(0xfffafafa));
+  static const PaletteEntry tileFlushed = PaletteEntry(Color(0xffe0e0e0));
 
-  static const PaletteEntry menuBackground =
-      PaletteEntry(Color.fromARGB(51, 82, 82, 213));
+  static const PaletteEntry menuBackground = PaletteEntry(Color(0xff0d47a1));
 }

@@ -1,32 +1,70 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:flutter_samegame/components/menu.dart';
+import 'package:flutter_samegame/providers/game_provider.dart';
+import 'firebase_options.dart';
+
 import 'package:flame/game.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_samegame/layers/gameover_layer.dart';
-import 'package:flutter_samegame/samegame_game.dart';
-import 'package:flutter_samegame/layers/menu_layer.dart';
+import 'components/gameover_layer.dart';
+import 'components/menu_layer.dart';
+import 'flame/samegame_game.dart';
 
-import 'layers/gameclear_layer.dart';
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
 
-void main() {
-  final game = SamegameGame();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(
-    GameWidget(
-      game: game,
-      overlayBuilderMap: {
-        MenuLayer.name: (BuildContext ctx, SamegameGame game) {
-          return MenuLayer(game: game);
-        },
-        GameOverLayer.name: (BuildContext ctx, SamegameGame game) {
-          return GameOverLayer(
-            game: game,
-          );
-        },
-        GameClearLayer.name: (BuildContext ctx, SamegameGame game) {
-          return GameClearLayer(
-            game: game,
-          );
-        }
-      },
-      initialActiveOverlays: const ['menu'],
+    const ProviderScope(
+      child: MainApp(),
     ),
   );
+}
+
+class MainApp extends ConsumerWidget {
+  const MainApp({super.key});
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final game = SamegameGame(
+      onScoreChanged: (int score) {
+        ref.read(scoreProvider.notifier).state = score;
+      },
+      onStatusChanged: (Status status) {
+        ref.read(statusProvider.notifier).state = status;
+      },
+    );
+
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Samegame',
+      theme: ThemeData.dark(),
+      home: Scaffold(
+        body: Column(
+          children: [
+            Menu(game),
+            Expanded(
+              child: GameWidget(
+                game: game,
+                overlayBuilderMap: {
+                  MenuLayer.name: (BuildContext ctx, SamegameGame game) {
+                    return MenuLayer(game: game);
+                  },
+                  GameOverLayer.name: (BuildContext ctx, SamegameGame game) {
+                    return GameOverLayer(
+                      game: game,
+                    );
+                  },
+                },
+                initialActiveOverlays: const [MenuLayer.name],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }

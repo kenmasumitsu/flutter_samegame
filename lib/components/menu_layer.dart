@@ -1,17 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_samegame/constants/palatte.dart';
-import 'package:flutter_samegame/samegame_game.dart';
-
-class MenuLayer extends StatefulWidget {
-  static const name = 'menu';
-
-  final SamegameGame game;
-
-  const MenuLayer({super.key, required this.game});
-
-  @override
-  State<MenuLayer> createState() => _MenuLayerState();
-}
+import 'package:flutter_samegame/providers/game_provider.dart';
+import 'package:flutter_samegame/providers/high_score_provider.dart';
+import 'package:flutter_samegame/flame/samegame_game.dart';
 
 extension LevelExt on Level {
   String get name {
@@ -26,12 +18,31 @@ extension LevelExt on Level {
   }
 }
 
-class _MenuLayerState extends State<MenuLayer> {
-  Level level = Level.easy;
+class MenuLayer extends ConsumerStatefulWidget {
+  static const name = 'menu';
+
+  final SamegameGame game;
+
+  const MenuLayer({super.key, required this.game});
+
+  @override
+  ConsumerState<MenuLayer> createState() => _MenuLayerState();
+}
+
+class _MenuLayerState extends ConsumerState<MenuLayer> {
+  Level _level = Level.easy;
+
+  @override
+  void initState() {
+    super.initState();
+    _level = widget.game.level;
+  }
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+
+    final highScore = ref.watch(highScoreProvider(_level));
 
     return Center(
       child: SizedBox(
@@ -39,15 +50,12 @@ class _MenuLayerState extends State<MenuLayer> {
         height: 360,
         child: Card(
           color: Palatte.menuBackground.color,
+          //color: Colors.blue,
           child: Column(
             children: [
               const SizedBox(
                 height: 24,
               ),
-              // Text(
-              //   'New Game',
-              //   style: theme.textTheme.titleLarge,
-              // ),
               if (widget.game.isSuspend()) ...[
                 ElevatedButton(
                   onPressed: () {
@@ -62,9 +70,9 @@ class _MenuLayerState extends State<MenuLayer> {
               ],
               ElevatedButton(
                 onPressed: () {
-                  debugPrint('start');
                   widget.game.overlays.remove(MenuLayer.name);
-                  widget.game.start(level);
+                  ref.read(levelProvider.notifier).state = _level;
+                  widget.game.start(_level);
                 },
                 child: const Text('New Game'),
               ),
@@ -75,11 +83,13 @@ class _MenuLayerState extends State<MenuLayer> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        level = level.prev();
-                      });
-                    },
+                    onPressed: _level.isEasiest()
+                        ? null
+                        : () {
+                            setState(() {
+                              _level = _level.prev();
+                            });
+                          },
                     child: const Icon(Icons.arrow_left),
                   ),
                   const SizedBox(
@@ -89,9 +99,8 @@ class _MenuLayerState extends State<MenuLayer> {
                     width: 72,
                     child: Center(
                       child: Text(
-                        level.name,
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(color: Colors.white),
+                        _level.name,
+                        style: theme.textTheme.titleMedium,
                       ),
                     ),
                   ),
@@ -99,15 +108,36 @@ class _MenuLayerState extends State<MenuLayer> {
                     width: 8,
                   ),
                   ElevatedButton(
-                    onPressed: () {
-                      setState(() {
-                        level = level.next();
-                      });
-                    },
+                    onPressed: _level.isHardest()
+                        ? null
+                        : () {
+                            setState(() {
+                              _level = _level.next();
+                            });
+                          },
                     child: const Icon(Icons.arrow_right),
                   ),
                 ],
               ),
+              const SizedBox(
+                height: 12,
+              ),
+              Text(
+                "High Score",
+                style: theme.textTheme.titleMedium,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(
+                highScore.name,
+                style: theme.textTheme.bodyMedium,
+              ),
+              const SizedBox(
+                height: 8,
+              ),
+              Text(highScore.score.toString(),
+                  style: theme.textTheme.bodyMedium),
             ],
           ),
         ),

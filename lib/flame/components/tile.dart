@@ -1,8 +1,8 @@
 import 'package:flame/components.dart';
 import 'package:flame/experimental.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_samegame/samegame_game.dart';
-import 'package:flutter_samegame/constants/tile_texture.dart';
+import 'package:flutter_samegame/flame/samegame_game.dart';
+import 'package:flutter_samegame/flame/tile_texture.dart';
 
 enum Status {
   normal,
@@ -42,7 +42,7 @@ class Tile extends PositionComponent
 
   @override
   void onTapUp(TapUpEvent event) {
-    debugPrint('onTapUp $this');
+    //debugPrint('onTapUp $this');
     if (gameRef.isRunning()) {
       gameRef.onTap(this);
     }
@@ -50,7 +50,7 @@ class Tile extends PositionComponent
 
   @override
   void onRemove() {
-    debugPrint('onRemove $this');
+    //debugPrint('onRemove $this');
   }
 
   @override
