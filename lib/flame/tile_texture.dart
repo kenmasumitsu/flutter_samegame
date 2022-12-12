@@ -78,7 +78,6 @@ class TileTexture {
   }
 
   void renderFlushed(Canvas canvas, Rect rect) {
-    final paint = Paint()..color = Colors.white;
-    canvas.drawRect(rect, paint);
+    canvas.drawRect(rect, flushed.paint());
   }
 }

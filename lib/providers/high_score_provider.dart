@@ -3,7 +3,7 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_samegame/model/high_score.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../samegame_game.dart';
+import '../flame/samegame_game.dart';
 
 class HighScoreNotifier extends StateNotifier<HighScore> {
   HighScoreNotifier(Level level)
@@ -41,24 +41,24 @@ class HighScoreNotifier extends StateNotifier<HighScore> {
     final docRef = db.collection("highscore").doc(level.name);
     db.runTransaction((transaction) async {
       final snapshot = await transaction.get(docRef);
-      final current = snapshot.data();
-      if (current != null) {
-        final currentScore = current['score'] as int;
-        if (highScore.score < currentScore) {
-          return;
-        }
-      }
 
-      transaction.update(docRef, {
-        "score": highScore.score,
-        "name": highScore.name,
-        "timestamp": Timestamp.fromDate(highScore.timestamp),
-      });
+      if (!snapshot.exists ||
+          _isHighScore(snapshot.get('score'), highScore.score)) {
+        transaction.set(docRef, {
+          "score": highScore.score,
+          "name": highScore.name,
+          "timestamp": Timestamp.fromDate(highScore.timestamp),
+        });
+      }
     }).then(
       (value) => debugPrint("DocumentSnapshot successfully updated!"),
       onError: (e) => debugPrint("Error updating document $e"),
     );
   }
+}
+
+bool _isHighScore(int fsScore, int score) {
+  return fsScore < score;
 }
 
 final highScoreProvider =

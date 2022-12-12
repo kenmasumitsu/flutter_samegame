@@ -1,9 +1,9 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
-import 'package:flutter_samegame/samegame_game.dart' as game;
+import 'package:flutter_samegame/flame/samegame_game.dart' as game;
 
-import '../constants/tile_texture.dart';
+import '../tile_texture.dart';
 import 'tile.dart';
 
 class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
@@ -15,6 +15,10 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
 
   int _score = 0;
   int get score => _score;
+  set score(int v) {
+    _score = v;
+    gameRef.setScore(_score);
+  }
 
   TileBoard({
     required this.nColumns,
@@ -26,6 +30,7 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   Future<void>? onLoad() {
     super.onLoad();
 
+    score = 0;
     final tileSize = _calcTileSize();
 
     _tiles = List.generate(
@@ -58,7 +63,7 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   }
 
   void reset() {
-    _score = 0;
+    score = 0;
     _selectedTiles.clear();
     for (final colTiles in _tiles) {
       for (final tile in colTiles) {
@@ -84,14 +89,13 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
         break;
       case Status.selected:
         _flushSelected();
-        // check game clear
-        if (_isGameClear()) {
-          _score += 1000;
-          gameRef.gameClear();
-        }
 
-        // check game over
-        if (_isGameOver()) {
+        if (_isGameClear()) {
+          // check game clear
+          score += 1000;
+          gameRef.gameClear();
+        } else if (_isGameOver()) {
+          // check game over
           gameRef.gameOver();
         }
         break;
@@ -197,7 +201,7 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
   void _flushSelected() {
     assert(_selectedTiles.length >= 2);
 
-    _score += (_selectedTiles.length - 2) * (_selectedTiles.length - 2);
+    score += (_selectedTiles.length - 2) * (_selectedTiles.length - 2);
     for (var tile in _selectedTiles) {
       tile.flush();
     }

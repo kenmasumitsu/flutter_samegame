@@ -1,13 +1,11 @@
 import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/widgets.dart';
-import 'package:flutter_samegame/components/tile_board.dart';
-import 'package:flutter_samegame/layers/gameclear_layer.dart';
+import 'package:flutter_samegame/flame/components/tile_board.dart';
 
-import 'components/menu_bar.dart';
 import 'components/tile.dart';
-import 'layers/gameover_layer.dart';
-import 'layers/menu_layer.dart';
+import '../components/gameover_layer.dart';
+import '../components/menu_layer.dart';
 
 enum Status {
   suspend,
@@ -60,32 +58,35 @@ enum Level {
 
 class SamegameGame extends FlameGame
     with HasTappableComponents, HasTappablesBridge {
-  static const menuBarHeight = 120.0;
-  static const menuBarWidth = 800.0;
-
   static const tileBoardWidth = 1600.0;
   static const tileBoardHeight = 1600.0;
 
   Status _status = Status.gameover;
   Status get status => _status;
+  set status(Status v) {
+    _status = v;
+    onStatusChanged(v);
+  }
 
   Level _level = Level.easy;
-
   Level get level => _level;
+
+  final Function(Status) onStatusChanged;
+  final Function(int) onScoreChanged;
+
+  SamegameGame({
+    required this.onStatusChanged,
+    required this.onScoreChanged,
+  });
 
   @override
   Future<void>? onLoad() {
     super.onLoad();
-
-    final menuBar = MenuBar()
-      ..position = Vector2(0, 0)
-      ..size = Vector2(menuBarWidth, menuBarHeight);
-    final world = World()..add(menuBar);
+    final world = World();
     add(world);
 
     final camera = CameraComponent(world: world)
-      ..viewfinder.visibleGameSize =
-          Vector2(tileBoardWidth, tileBoardHeight + menuBarHeight)
+      ..viewfinder.visibleGameSize = Vector2(tileBoardWidth, tileBoardHeight)
       ..viewfinder.position = Vector2(0, 0)
       ..viewfinder.anchor = Anchor.topLeft;
 
@@ -98,8 +99,8 @@ class SamegameGame extends FlameGame
     tileBoard?.onTap(tile);
   }
 
-  int getScore() {
-    return tileBoard?.score ?? 0;
+  void setScore(int score) {
+    onScoreChanged(score);
   }
 
   World get world {
@@ -126,7 +127,7 @@ class SamegameGame extends FlameGame
   void start(Level level) {
     _level = level;
     _reset();
-    _status = Status.running;
+    status = Status.running;
   }
 
   void _reset() {
@@ -137,41 +138,49 @@ class SamegameGame extends FlameGame
       nRows: _level.nRows,
       nColors: _level.nColors,
     )
-      ..position = Vector2(0, menuBarHeight)
+      ..position = Vector2(0, 0)
       ..size = Vector2(tileBoardWidth, tileBoardHeight);
 
     world.add(tb);
   }
 
-  void suspend() {
-    _status = Status.suspend;
+  void _suspend() {
+    status = Status.suspend;
   }
 
   void resume() {
-    assert(_status == Status.suspend);
-    _status = Status.running;
+    assert(status == Status.suspend);
+    status = Status.running;
   }
 
   bool isRunning() {
-    return _status == Status.running;
+    return status == Status.running;
   }
 
   bool isSuspend() {
-    return _status == Status.suspend;
+    return status == Status.suspend;
   }
 
-  void showMenu() {
-    suspend();
+  void showMenu({bool suspend = false}) {
+    if (overlays.isActive(MenuLayer.name)) {
+      return;
+    }
+
+    if (suspend) {
+      _suspend();
+    }
+
+    overlays.clear();
     overlays.add(MenuLayer.name);
   }
 
   void gameClear() {
-    _status = Status.gameclear;
+    status = Status.gameclear;
     overlays.add(GameOverLayer.name);
   }
 
   void gameOver() {
-    _status = Status.gameover;
+    status = Status.gameover;
     overlays.add(GameOverLayer.name);
   }
 }

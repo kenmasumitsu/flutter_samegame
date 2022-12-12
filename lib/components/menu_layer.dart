@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_samegame/constants/palatte.dart';
+import 'package:flutter_samegame/providers/game_provider.dart';
 import 'package:flutter_samegame/providers/high_score_provider.dart';
-import 'package:flutter_samegame/samegame_game.dart';
+import 'package:flutter_samegame/flame/samegame_game.dart';
 
 extension LevelExt on Level {
   String get name {
@@ -70,6 +71,7 @@ class _MenuLayerState extends ConsumerState<MenuLayer> {
               ElevatedButton(
                 onPressed: () {
                   widget.game.overlays.remove(MenuLayer.name);
+                  ref.read(levelProvider.notifier).state = _level;
                   widget.game.start(_level);
                 },
                 child: const Text('New Game'),
@@ -98,8 +100,7 @@ class _MenuLayerState extends ConsumerState<MenuLayer> {
                     child: Center(
                       child: Text(
                         _level.name,
-                        style: theme.textTheme.titleMedium
-                            ?.copyWith(color: Colors.white),
+                        style: theme.textTheme.titleMedium,
                       ),
                     ),
                   ),
@@ -123,25 +124,20 @@ class _MenuLayerState extends ConsumerState<MenuLayer> {
               ),
               Text(
                 "High Score",
-                style:
-                    theme.textTheme.titleMedium?.copyWith(color: Colors.white),
+                style: theme.textTheme.titleMedium,
               ),
               const SizedBox(
                 height: 8,
               ),
               Text(
                 highScore.name,
-                style:
-                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
+                style: theme.textTheme.bodyMedium,
               ),
               const SizedBox(
                 height: 8,
               ),
-              Text(
-                highScore.score.toString(),
-                style:
-                    theme.textTheme.bodyMedium?.copyWith(color: Colors.white),
-              ),
+              Text(highScore.score.toString(),
+                  style: theme.textTheme.bodyMedium),
             ],
           ),
         ),
