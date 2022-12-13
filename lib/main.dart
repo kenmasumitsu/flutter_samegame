@@ -1,3 +1,4 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_samegame/components/menu.dart';
@@ -16,6 +17,18 @@ Future<void> main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  try {
+    await FirebaseAuth.instance.signInAnonymously();
+  } on FirebaseAuthException catch (e) {
+    switch (e.code) {
+      case "operation-not-allowed":
+        debugPrint("Anonymous auth hasn't been enabled for this project.");
+        break;
+      default:
+        debugPrint("Unknown error.");
+    }
+  }
 
   runApp(
     const ProviderScope(
