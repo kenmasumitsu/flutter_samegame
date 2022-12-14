@@ -3,6 +3,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_samegame/components/menu.dart';
 import 'package:flutter_samegame/providers/game_provider.dart';
+import 'package:firebase_app_check/firebase_app_check.dart';
+
 import 'firebase_options.dart';
 
 import 'package:flame/game.dart';
@@ -16,6 +18,10 @@ Future<void> main() async {
 
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
+  );
+  await FirebaseAppCheck.instance.activate(
+    webRecaptchaSiteKey: '6LdAoHwjAAAAADlqTEypBWF2OqGYgxq8KR7wLHey',
+    androidProvider: AndroidProvider.debug,
   );
 
   try {

@@ -18,7 +18,7 @@ class HighScoreNotifier extends StateNotifier<HighScore> {
     final docRef = db.collection("highscore").doc(level.name);
     docRef.snapshots().listen(
       (event) {
-        debugPrint("current data: ${event.data()}");
+        //debugPrint("current data: ${event.data()}");
         final data = event.data();
         if (data == null) {
           return;
