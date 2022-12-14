@@ -2,6 +2,7 @@ import 'package:flame/experimental.dart';
 import 'package:flame/game.dart';
 import 'package:flame/widgets.dart';
 import 'package:flutter_samegame/flame/components/tile_board.dart';
+import 'package:just_audio/just_audio.dart';
 
 import 'components/tile.dart';
 import '../components/gameover_layer.dart';
@@ -74,6 +75,8 @@ class SamegameGame extends FlameGame
   final Function(Status) onStatusChanged;
   final Function(int) onScoreChanged;
 
+  final AudioPlayer player = AudioPlayer();
+
   SamegameGame({
     required this.onStatusChanged,
     required this.onScoreChanged,
@@ -95,7 +98,10 @@ class SamegameGame extends FlameGame
     return null;
   }
 
-  void onTap(Tile tile) {
+  Future<void> onTap(Tile tile) async {
+    await player.setAsset('assets/audio/select.mp3');
+    player.play();
+
     tileBoard?.onTap(tile);
   }
 
@@ -174,7 +180,10 @@ class SamegameGame extends FlameGame
     overlays.add(MenuLayer.name);
   }
 
-  void gameClear() {
+  Future<void> gameClear() async {
+    await player.setAsset('assets/audio/jaja_n.mp3');
+    player.play();
+
     status = Status.gameclear;
     overlays.add(GameOverLayer.name);
   }
