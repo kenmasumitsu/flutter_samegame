@@ -56,6 +56,13 @@ class _MenuLayerState extends ConsumerState<MenuLayer> {
               const SizedBox(
                 height: 24,
               ),
+              Text(
+                'SAMEGAME',
+                style: theme.textTheme.titleLarge,
+              ),
+              const SizedBox(
+                height: 24,
+              ),
               if (widget.game.isSuspend()) ...[
                 ElevatedButton(
                   onPressed: () {
