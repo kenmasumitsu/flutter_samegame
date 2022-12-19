@@ -1,8 +1,8 @@
 import 'dart:math';
 
 import 'package:flame/components.dart';
+import 'package:flame_audio/flame_audio.dart';
 import 'package:flutter_samegame/flame/samegame_game.dart' as game;
-import 'package:just_audio/just_audio.dart';
 
 import '../tile_texture.dart';
 import 'tile.dart';
@@ -20,8 +20,6 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
     _score = v;
     gameRef.setScore(_score);
   }
-
-  final AudioPlayer player = AudioPlayer();
 
   TileBoard({
     required this.nColumns,
@@ -219,8 +217,7 @@ class TileBoard extends PositionComponent with HasGameRef<game.SamegameGame> {
     _handleColumn(xPosSet);
     _handleRow();
 
-    await player.setAsset('assets/audio/flush.mp3');
-    player.play();
+    FlameAudio.play('flush.mp3', volume: 0.3);
   }
 
   void _handleColumn(Set<int> xPosSet) {
